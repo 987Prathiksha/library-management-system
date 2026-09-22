@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}{{ action }} Book - Bibliotheca{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-7">
+        <div class="glass-card p-4 p-sm-5">
+            <div class="d-flex align-items-center justify-content-between mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+                <div>
+                    <h3 class="fw-bold mb-1">{{ action }} Book Record</h3>
+                    <p class="text-muted small mb-0">Fill in the catalog details below</p>
+                </div>
+                <a href="{{ url_for('book_list') }}" class="btn btn-outline-light btn-sm rounded-pill">
+                    <i class="bi bi-arrow-left me-1"></i> Back to Catalog
+                </a>
+            </div>
+
+            <form method="POST" action="{{ url_for('book_add') if action == 'Add' else url_for('book_edit', book_id=book.id) }}">
+                <div class="mb-3">
+                    <label for="title" class="form-label text-muted small fw-semibold">BOOK TITLE *</label>
+                    <input type="text" class="form-control form-control-glass" id="title" name="title" value="{{ book.title if book else '' }}" required placeholder="e.g. Clean Code">
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label for="author" class="form-label text-muted small fw-semibold">AUTHOR *</label>
+                        <input type="text" class="form-control form-control-glass" id="author" name="author" value="{{ book.author if book else '' }}" required placeholder="e.g. Robert C. Martin">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="isbn" class="form-label text-muted small fw-semibold">ISBN NUMBER</label>
+                        <input type="text" class="form-control form-control-glass" id="isbn" name="isbn" value="{{ book.isbn if book and book.isbn else '' }}" placeholder="e.g. 978-0132350884">
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label for="category" class="form-label text-muted small fw-semibold">CATEGORY *</label>
+                        <input type="text" class="form-control form-control-glass" id="category" name="category" value="{{ book.category if book else 'General' }}" required placeholder="e.g. Computer Science, Fiction">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="quantity" class="form-label text-muted small fw-semibold">TOTAL QUANTITY *</label>
+                        <input type="number" class="form-control form-control-glass" id="quantity" name="quantity" min="1" value="{{ book.quantity if book else 1 }}" required>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="cover_url" class="form-label text-muted small fw-semibold">COVER IMAGE URL</label>
+                    <input type="url" class="form-control form-control-glass" id="cover_url" name="cover_url" value="{{ book.cover_url if book and book.cover_url else '' }}" placeholder="https://example.com/cover.jpg">
+                </div>
+
+                <div class="mb-4">
+                    <label for="description" class="form-label text-muted small fw-semibold">DESCRIPTION</label>
+                    <textarea class="form-control form-control-glass" id="description" name="description" rows="4" placeholder="Brief book summary or overview...">{{ book.description if book and book.description else '' }}</textarea>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="{{ url_for('book_list') }}" class="btn btn-outline-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary-gradient px-4">
+                        <i class="bi bi-save me-1"></i> Save Book
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

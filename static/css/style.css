@@ -1,0 +1,225 @@
+/* Library Management System - Custom Modern Design System */
+
+:root {
+    --primary-color: #6366f1;
+    --primary-hover: #4f46e5;
+    --secondary-color: #ec4899;
+    --accent-color: #06b6d4;
+    --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+    --card-bg: rgba(30, 41, 59, 0.7);
+    --card-border: rgba(255, 255, 255, 0.1);
+    --text-primary: #f8fafc;
+    --text-muted: #94a3b8;
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+body {
+    background: var(--bg-gradient);
+    background-attachment: fixed;
+    color: var(--text-primary);
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Glassmorphism Components */
+.glass-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--card-border);
+    border-radius: 1rem;
+    box-shadow: var(--glass-shadow);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.glass-card:hover {
+    box-shadow: 0 12px 40px 0 rgba(99, 102, 241, 0.2);
+}
+
+.glass-nav {
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Navbar Customization */
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.35rem;
+    background: linear-gradient(90deg, #818cf8, #c084fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.nav-link {
+    color: var(--text-muted) !important;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.nav-link:hover, .nav-link.active {
+    color: #ffffff !important;
+}
+
+/* Metric Stats Cards */
+.stat-card {
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+    border-radius: 50%;
+}
+
+.stat-icon {
+    font-size: 2.2rem;
+    opacity: 0.9;
+}
+
+/* Book Cards & Grid */
+.book-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+.book-cover {
+    height: 220px;
+    object-fit: cover;
+    width: 100%;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    transition: transform 0.3s ease;
+}
+
+.book-card:hover .book-cover {
+    transform: scale(1.03);
+}
+
+/* Custom Table Styling */
+.table-glass {
+    color: var(--text-primary);
+    vertical-align: middle;
+}
+
+.table-glass th {
+    background: rgba(15, 23, 42, 0.6);
+    color: #a5b4fc;
+    font-weight: 600;
+    border-bottom: 1px solid var(--card-border);
+    padding: 1rem;
+}
+
+.table-glass td {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    background: transparent;
+    color: var(--text-primary);
+}
+
+.table-glass tbody tr:hover {
+    background: rgba(99, 102, 241, 0.08);
+}
+
+/* Custom Badges */
+.badge-status {
+    padding: 0.45em 0.8em;
+    font-weight: 600;
+    border-radius: 0.5rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+.badge-issued {
+    background: rgba(59, 130, 246, 0.2);
+    color: #60a5fa;
+    border: 1px solid rgba(59, 130, 246, 0.4);
+}
+
+.badge-returned {
+    background: rgba(34, 197, 94, 0.2);
+    color: #4ade80;
+    border: 1px solid rgba(34, 197, 94, 0.4);
+}
+
+.badge-overdue {
+    background: rgba(239, 68, 68, 0.2);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+.badge-unpaid {
+    background: rgba(245, 158, 11, 0.2);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+.badge-paid {
+    background: rgba(34, 197, 94, 0.2);
+    color: #4ade80;
+    border: 1px solid rgba(34, 197, 94, 0.4);
+}
+
+/* Buttons & Inputs */
+.btn-primary-gradient {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+    border: none;
+    color: white;
+    font-weight: 600;
+    border-radius: 0.6rem;
+    padding: 0.6rem 1.4rem;
+    transition: all 0.2s ease;
+}
+
+.btn-primary-gradient:hover {
+    background: linear-gradient(135deg, var(--primary-hover) 0%, #3730a3 100%);
+    box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+    color: white;
+}
+
+.form-control-glass, .form-select-glass {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid var(--card-border);
+    color: var(--text-primary);
+    border-radius: 0.6rem;
+    padding: 0.65rem 1rem;
+}
+
+.form-control-glass:focus, .form-select-glass:focus {
+    background: rgba(15, 23, 42, 0.9);
+    border-color: var(--primary-color);
+    color: var(--text-primary);
+    box-shadow: 0 0 0 0.25rem rgba(99, 102, 241, 0.25);
+}
+
+.form-control-glass::placeholder {
+    color: var(--text-muted);
+}
+
+/* Floating Alerts */
+.alert-custom {
+    border-radius: 0.75rem;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Footer */
+footer {
+    margin-top: auto;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(15, 23, 42, 0.6);
+    color: var(--text-muted);
+}

@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}Student Dashboard - Bibliotheca{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+    <div>
+        <h2 class="fw-bold mb-1">Hello, {{ current_user.username }}!</h2>
+        <p class="text-muted mb-0">Manage your active book loans, due dates, and borrowing history.</p>
+    </div>
+    <div>
+        <a href="{{ url_for('book_list') }}" class="btn btn-primary-gradient">
+            <i class="bi bi-search me-1"></i> Browse Book Catalog
+        </a>
+    </div>
+</div>
+
+<!-- Alert Banner for Outstanding Fines -->
+{% if total_user_fine > 0 %}
+    <div class="alert alert-warning alert-custom d-flex justify-content-between align-items-center mb-4 p-3">
+        <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-exclamation-triangle-fill fs-4 text-warning"></i>
+            <div>
+                <strong class="d-block">Outstanding Fines Pending</strong>
+                <span class="small">You have ${{ "%.2f"|format(total_user_fine) }} in unpaid overdue fines.</span>
+            </div>
+        </div>
+        <a href="{{ url_for('fine_list') }}" class="btn btn-sm btn-warning text-dark fw-bold rounded-pill px-3">
+            Pay Fines Now
+        </a>
+    </div>
+{% endif %}
+
+<!-- Currently Borrowed Books Section -->
+<div class="glass-card p-4 mb-4">
+    <h5 class="fw-bold mb-3"><i class="bi bi-book-half text-primary me-2"></i> Currently Issued Books</h5>
+
+    {% if active_issues %}
+        <div class="row g-3">
+            {% for issue in active_issues %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="glass-card p-3 h-100 border-start border-4 {{ 'border-danger' if issue.status == 'overdue' else 'border-primary' }}">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h6 class="fw-bold mb-0 text-truncate me-2">{{ issue.book.title }}</h6>
+                            {% if issue.status == 'overdue' %}
+                                <span class="badge badge-status badge-overdue">Overdue</span>
+                            {% else %}
+                                <span class="badge badge-status badge-issued">Active</span>
+                            {% endif %}
+                        </div>
+                        <p class="text-muted small mb-2"><i class="bi bi-person me-1"></i> {{ issue.book.author }}</p>
+                        <div class="fs-7 text-muted mb-3">
+                            <div><i class="bi bi-calendar-event me-1"></i> Issued: {{ issue.issue_date.strftime('%Y-%m-%d') }}</div>
+                            <div><i class="bi bi-calendar-check me-1"></i> Due: <strong class="{{ 'text-danger' if issue.status == 'overdue' else 'text-light' }}">{{ issue.due_date.strftime('%Y-%m-%d') }}</strong></div>
+                        </div>
+                        <form method="POST" action="{{ url_for('return_book', issue_id=issue.id) }}">
+                            <button type="submit" class="btn btn-sm btn-outline-success w-100 rounded-pill">
+                                <i class="bi bi-arrow-return-left me-1"></i> Return Book
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-4 text-muted">
+            <i class="bi bi-bookmark-check fs-1 opacity-50 mb-2 d-block"></i>
+            <p class="mb-2">You currently have no active book loans.</p>
+            <a href="{{ url_for('book_list') }}" class="btn btn-sm btn-outline-primary rounded-pill px-3">Explore Catalog</a>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Borrowing History Section -->
+<div class="glass-card p-4">
+    <h5 class="fw-bold mb-3"><i class="bi bi-history text-info me-2"></i> Recent Borrowing History</h5>
+
+    {% if recent_history %}
+        <div class="table-responsive">
+            <table class="table table-glass mb-0">
+                <thead>
+                    <tr>
+                        <th>Book Title</th>
+                        <th>Author</th>
+                        <th>Issued Date</th>
+                        <th>Returned Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for issue in recent_history %}
+                        <tr>
+                            <td class="fw-semibold">{{ issue.book.title }}</td>
+                            <td class="text-muted">{{ issue.book.author }}</td>
+                            <td>{{ issue.issue_date.strftime('%Y-%m-%d') }}</td>
+                            <td>{{ issue.return_date.strftime('%Y-%m-%d') if issue.return_date else '-' }}</td>
+                            <td>
+                                {% if issue.status == 'issued' %}
+                                    <span class="badge badge-status badge-issued">Issued</span>
+                                {% elif issue.status == 'returned' %}
+                                    <span class="badge badge-status badge-returned">Returned</span>
+                                {% elif issue.status == 'overdue' %}
+                                    <span class="badge badge-status badge-overdue">Overdue</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="text-muted mb-0 py-2">No borrowing history available.</p>
+    {% endif %}
+</div>
+{% endblock %}

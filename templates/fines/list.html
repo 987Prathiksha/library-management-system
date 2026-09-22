@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Fine Management - Bibliotheca{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+    <div>
+        <h2 class="fw-bold mb-1">Fine Management</h2>
+        <p class="text-muted mb-0">Track and settle overdue fine payments.</p>
+    </div>
+    <div class="glass-card px-4 py-2 border-start border-4 border-warning">
+        <span class="text-muted fs-8 text-uppercase d-block">Total Unpaid Balance</span>
+        <h4 class="fw-bold text-warning mb-0">${{ "%.2f"|format(total_unpaid) }}</h4>
+    </div>
+</div>
+
+<div class="glass-card p-4">
+    {% if fines %}
+        <div class="table-responsive">
+            <table class="table table-glass mb-0">
+                <thead>
+                    <tr>
+                        <th>Fine ID</th>
+                        <th>Issue Ref</th>
+                        {% if current_user.is_admin %}<th>Borrower</th>{% endif %}
+                        <th>Book Title</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Generated Date</th>
+                        <th>Paid Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fine in fines %}
+                        <tr>
+                            <td class="fw-semibold">#{{ fine.id }}</td>
+                            <td>#{{ fine.issue_id }}</td>
+                            {% if current_user.is_admin %}
+                                <td>
+                                    <span class="fw-medium text-light">{{ fine.user.username }}</span>
+                                </td>
+                            {% endif %}
+                            <td class="fw-semibold">{{ fine.issue_log.book.title }}</td>
+                            <td class="fw-bold text-light">${{ "%.2f"|format(fine.amount) }}</td>
+                            <td>
+                                {% if fine.status == 'unpaid' %}
+                                    <span class="badge badge-status badge-unpaid">Unpaid</span>
+                                {% else %}
+                                    <span class="badge badge-status badge-paid">Paid</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ fine.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>{{ fine.paid_at.strftime('%Y-%m-%d %H:%M') if fine.paid_at else '-' }}</td>
+                            <td>
+                                {% if fine.status == 'unpaid' %}
+                                    <form method="POST" action="{{ url_for('pay_fine', fine_id=fine.id) }}">
+                                        <button type="submit" class="btn btn-sm btn-success rounded-pill px-3">
+                                            <i class="bi bi-credit-card me-1"></i> Pay Fine
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <span class="text-success small fw-semibold"><i class="bi bi-check-circle-fill"></i> Settled</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="text-center py-5 text-muted">
+            <i class="bi bi-cash-coin fs-1 opacity-50 mb-2 d-block text-success"></i>
+            <h5>No fine records found</h5>
+            <p class="mb-0">There are no outstanding or historical fines logged.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

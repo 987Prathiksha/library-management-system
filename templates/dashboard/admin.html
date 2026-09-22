@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Bibliotheca{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+    <div>
+        <h2 class="fw-bold mb-1">Administrator Dashboard</h2>
+        <p class="text-muted mb-0">Overview of library operations, circulation stats, and catalog health.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('book_add') }}" class="btn btn-primary-gradient">
+            <i class="bi bi-plus-lg me-1"></i> Add New Book
+        </a>
+        <a href="{{ url_for('issue_list') }}" class="btn btn-outline-light">
+            <i class="bi bi-journal-text me-1"></i> View All Issues
+        </a>
+    </div>
+</div>
+
+<!-- Metrics Overview Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-sm-6 col-lg-3">
+        <div class="glass-card stat-card d-flex align-items-center justify-content-between">
+            <div>
+                <span class="text-muted small fw-semibold text-uppercase">Total Catalog</span>
+                <h2 class="fw-bold text-light mb-0 mt-1">{{ total_books }}</h2>
+            </div>
+            <div class="stat-icon text-primary">
+                <i class="bi bi-journals"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-3">
+        <div class="glass-card stat-card d-flex align-items-center justify-content-between">
+            <div>
+                <span class="text-muted small fw-semibold text-uppercase">Registered Members</span>
+                <h2 class="fw-bold text-light mb-0 mt-1">{{ total_users }}</h2>
+            </div>
+            <div class="stat-icon text-info">
+                <i class="bi bi-people-fill"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-3">
+        <div class="glass-card stat-card d-flex align-items-center justify-content-between">
+            <div>
+                <span class="text-muted small fw-semibold text-uppercase">Active Issues</span>
+                <h2 class="fw-bold text-light mb-0 mt-1">{{ active_issues_count }}</h2>
+            </div>
+            <div class="stat-icon text-warning">
+                <i class="bi bi-arrow-left-right"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-3">
+        <div class="glass-card stat-card d-flex align-items-center justify-content-between">
+            <div>
+                <span class="text-muted small fw-semibold text-uppercase">Unpaid Fines</span>
+                <h2 class="fw-bold text-light mb-0 mt-1">${{ "%.2f"|format(unpaid_fines_sum) }}</h2>
+            </div>
+            <div class="stat-icon text-danger">
+                <i class="bi bi-cash-stack"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Circulation Activity -->
+<div class="glass-card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold mb-0"><i class="bi bi-clock-history text-primary me-2"></i> Recent Circulation Activity</h5>
+        <a href="{{ url_for('issue_list') }}" class="text-primary text-decoration-none small fw-semibold">View All</a>
+    </div>
+
+    {% if recent_issues %}
+        <div class="table-responsive">
+            <table class="table table-glass mb-0">
+                <thead>
+                    <tr>
+                        <th>Issue ID</th>
+                        <th>User</th>
+                        <th>Book Title</th>
+                        <th>Issue Date</th>
+                        <th>Due Date</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for issue in recent_issues %}
+                        <tr>
+                            <td class="fw-semibold">#{{ issue.id }}</td>
+                            <td>{{ issue.user.username }}</td>
+                            <td>{{ issue.book.title }}</td>
+                            <td>{{ issue.issue_date.strftime('%Y-%m-%d') }}</td>
+                            <td>{{ issue.due_date.strftime('%Y-%m-%d') }}</td>
+                            <td>
+                                {% if issue.status == 'issued' %}
+                                    <span class="badge badge-status badge-issued">Active</span>
+                                {% elif issue.status == 'returned' %}
+                                    <span class="badge badge-status badge-returned">Returned</span>
+                                {% elif issue.status == 'overdue' %}
+                                    <span class="badge badge-status badge-overdue">Overdue</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if issue.status != 'returned' %}
+                                    <form method="POST" action="{{ url_for('return_book', issue_id=issue.id) }}" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-outline-success">
+                                            <i class="bi bi-check2-circle"></i> Return
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <span class="text-muted small"><i class="bi bi-check-all text-success"></i> Done</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="text-muted mb-0 py-3 text-center">No circulation activity recorded yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

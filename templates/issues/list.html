@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Circulation Logs - Bibliotheca{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+    <div>
+        <h2 class="fw-bold mb-1">Circulation & Issue Logs</h2>
+        <p class="text-muted mb-0">
+            {% if current_user.is_admin %}
+                Complete log of all library book issues and returns.
+            {% else %}
+                Your complete borrowing and circulation records.
+            {% endif %}
+        </p>
+    </div>
+    <div>
+        <a href="{{ url_for('book_list') }}" class="btn btn-primary-gradient">
+            <i class="bi bi-book me-1"></i> Browse Books
+        </a>
+    </div>
+</div>
+
+<div class="glass-card p-4">
+    {% if issues %}
+        <div class="table-responsive">
+            <table class="table table-glass mb-0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        {% if current_user.is_admin %}<th>Borrower</th>{% endif %}
+                        <th>Book Title</th>
+                        <th>Issue Date</th>
+                        <th>Due Date</th>
+                        <th>Return Date</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for issue in issues %}
+                        <tr>
+                            <td class="fw-semibold">#{{ issue.id }}</td>
+                            {% if current_user.is_admin %}
+                                <td>
+                                    <span class="fw-medium text-light">{{ issue.user.username }}</span>
+                                    <br><span class="text-muted fs-8">{{ issue.user.email }}</span>
+                                </td>
+                            {% endif %}
+                            <td class="fw-semibold">{{ issue.book.title }}</td>
+                            <td>{{ issue.issue_date.strftime('%Y-%m-%d') }}</td>
+                            <td>
+                                <span class="{{ 'text-danger fw-bold' if issue.status == 'overdue' else '' }}">
+                                    {{ issue.due_date.strftime('%Y-%m-%d') }}
+                                </span>
+                            </td>
+                            <td>{{ issue.return_date.strftime('%Y-%m-%d') if issue.return_date else '-' }}</td>
+                            <td>
+                                {% if issue.status == 'issued' %}
+                                    <span class="badge badge-status badge-issued">Issued</span>
+                                {% elif issue.status == 'returned' %}
+                                    <span class="badge badge-status badge-returned">Returned</span>
+                                {% elif issue.status == 'overdue' %}
+                                    <span class="badge badge-status badge-overdue">Overdue</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if issue.status != 'returned' %}
+                                    <form method="POST" action="{{ url_for('return_book', issue_id=issue.id) }}">
+                                        <button type="submit" class="btn btn-sm btn-outline-success">
+                                            <i class="bi bi-box-arrow-in-left me-1"></i> Return Book
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <span class="text-muted small"><i class="bi bi-check2-all text-success"></i> Closed</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="text-center py-5 text-muted">
+            <i class="bi bi-journal-text fs-1 opacity-50 mb-2 d-block text-primary"></i>
+            <h5>No circulation records found</h5>
+            <p class="mb-0">Issued books will appear here once checked out.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
